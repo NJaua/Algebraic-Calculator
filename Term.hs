@@ -38,6 +38,7 @@ showTerm (Fun "sen" t) = "sin(" ++ (show t) ++ ")"
 showTerm (Fun "cos" t) = "cos(" ++ (show t) ++ ")"
 showTerm (Integ t x) = "\\int " ++ (show t) ++ "d" ++ (show x)
 showTerm (Sum t1 t2) = (show t1) ++ "+" ++ (show t2)
+showTerm (Mult (Const a b) (Const c d))= (show (Const a b))++"*"++(show (Const c d))
 showTerm (Mult (Sum t1 t2) (Sum t3 t4)) = "("++(show (Sum t1 t2)) ++ ")" ++ "("++(show (Sum t3 t4)) ++ ")"
 showTerm (Mult (Sum t1 t2) t3) = "("++(show (Sum t1 t2)) ++ ")" ++ (show t3)
 showTerm (Mult t3 (Sum t1 t2)) = (show t3) ++ "("++(show (Sum t1 t2)) ++ ")"
