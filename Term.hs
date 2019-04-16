@@ -45,8 +45,8 @@ showTerm (Mult t1 t2) = (show t1) ++ (show t2)
 showTerm (Exp (Var x) n) = x ++ "^{" ++ (show n) ++ "}"
 showTerm (Exp (Const a 1) n) = (show (Const a 1)) ++ "^{" ++ (show n) ++ "}"
 showTerm (Exp (Exp a m) n) = (show (Exp a m)) ++ "^{" ++ (show n) ++ "}"
-showTerm (Exp (Fun "sen" t0) n) = "sin" ++ "{" ++ (show n) ++ "}(" ++ (show t0) ++")"
-showTerm (Exp (Fun "cos" t0) n) = "cos" ++ "{" ++ (show n) ++ "}(" ++ (show t0) ++")"
+showTerm (Exp (Fun "sen" t0) n) = "sin" ++ "^{" ++ (show n) ++ "}(" ++ (show t0) ++")"
+showTerm (Exp (Fun "cos" t0) n) = "cos" ++ "^{" ++ (show n) ++ "}(" ++ (show t0) ++")"
 showTerm (Exp t0 n) = "(" ++ (show t0) ++ ")^{" ++ (show n) ++ "}"
 instance Show Term where show t = showTerm t
 
@@ -59,7 +59,7 @@ instance Num Term where
     negate (Const a b) = (Const (-a) b)
     negate x = (Mult (Const (-1) 1) x)
 
-instance  Eq Term where
+instance Eq Term where
     (Const a b) == (Const c d) = a==c && b==d 
     (Var x) == (Var y) = x==y
     (Fun f t) == (Fun g u) = f==g && t==u
