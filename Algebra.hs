@@ -80,7 +80,7 @@ groupAtoms :: Term -> Term
 groupAtoms (Const p q) = Const p q
 groupAtoms (Var x) = Var x
 groupAtoms (Fun f t) = Fun f (groupAtoms t)
-groupAtoms (Integ t1 t2) = Integ (groupAtoms t1) (groupAtoms t2)
+groupAtoms (Integ t1 t2) = Integ (groupAtoms t1) t2
 groupAtoms (Exp t n) = Exp (groupAtoms t) n
 groupAtoms (Sum t1 t2) = Sum (groupAtoms t1) (groupAtoms t2)
 groupAtoms (Mult (Mult t1 t2) t3) = groupAtoms (Mult t1 (Mult t2 t3))

@@ -12,10 +12,15 @@ simbInt (Mult t1 t2) = (simbInt t1) * (simbInt t2)
 simbInt (Integ (Const p q) x) = (Const p q) * x
 simbInt (Integ (Mult (Const p q) t) x) = (Const p q) * (Integ t x)
 simbInt (Integ (Sum t1 t2) x) = (Integ t1 x) + (Integ t2 x)
+simbInt (Integ t x)
+    | t == x = (Const 1 2) * (Exp x 2)
 simbInt (Integ (Exp t k) x)
     | t == x = (Const 1 (k+1)) * (Exp x (k+1))
 simbInt (Integ t x)
     | not (occurs t x) = t * x
+simbInt (Integ (Mult t1 t2) x)
+    | not (occurs t1 x) = t1 * (Integ t2 x)
+    | not (occurs t2 x) = t2 * (Integ t1 x)
 simbInt (Integ (Fun "sen" t) x)
     | t == x = (-1) * (cosen x)
 simbInt (Integ (Fun "cos" t) x)
@@ -26,12 +31,20 @@ simbInt (Integ (Fun "cos" (Mult (Const p 1) t)) x)
     | t == x = (Const 1 p) * (sen ((Const p 1) * x))
 simbInt (Integ (Mult (Fun "cos" x1) (Exp (Fun "sen" x2) n)) x3)
     | x1 == x2 && x2 == x3 = (Const 1 (n+1)) * (Exp (sen x) (n+1))
+simbInt (Integ (Mult (Fun "cos" x1) (Fun "sen" x2)) x3)
+    | x1 == x2 && x2 == x3 = (Const 1 2) * (Exp (sen x) 2)
 simbInt (Integ (Mult (Exp (Fun "cos" x1) n) (Fun "sen" x2)) x3)
     | x1 == x2 && x2 == x3 = (Const (-1) (n+1)) * (Exp (cosen x) (n+1))
+simbInt (Integ (Mult (Fun "cos" x1) (Fun "sen" x2)) x3)
+    | x1 == x2 && x2 == x3 = (Const (-1) 2) * (Exp (cosen x) 2)
 simbInt (Integ (Mult (Fun "cos" (Mult (Const k1 1) x1)) (Exp (Fun "sen" (Mult (Const k2 1) x2)) n)) x3)
     | x1 == x2 && x2 == x3 && k1 == k2 = (Const 1 (k1*(n+1))) * (Exp (sen (Mult (Const k1 1) x)) (n+1))
+simbInt (Integ (Mult (Fun "cos" (Mult (Const k1 1) x1)) (Fun "sen" (Mult (Const k2 1) x2))) x3)
+    | x1 == x2 && x2 == x3 && k1 == k2 = (Const 1 (k1*2)) * (Exp (sen (Mult (Const k1 1) x)) 2)
 simbInt (Integ (Mult (Exp (Fun "cos" (Mult (Const k1 1) x1)) n) (Fun "sen" (Mult (Const k2 1) x2))) x3)
     | x1 == x2 && x2 == x3 && k1 == k2 = (Const (-1) (k1*(n+1))) * (Exp (cosen (Mult (Const k1 1) x)) (n+1))
+simbInt (Integ (Mult (Fun "cos" (Mult (Const k1 1) x1)) (Fun "sen" (Mult (Const k2 1) x2))) x3)
+    | x1 == x2 && x2 == x3 && k1 == k2 = (Const (-1) (k1*2)) * (Exp (cosen (Mult (Const k1 1) x)) 2)
 simbInt (Integ (Exp (Fun "sen" t) n) x)
     | t == x && even n = Integ (Exp ((Const 1 2) * (1 + (-1)*(cosen (2*x)))) (n`div`2)) x
     | t == x && odd  n = Integ ((Exp (1 + (-1)*(Exp (cosen x) 2)) ((n-1)`div`2)) * (sen x)) x
@@ -44,6 +57,7 @@ simbInt (Integ (Exp (Fun "sen" (Mult k t)) n) x)
 simbInt (Integ (Exp (Fun "cos" (Mult k t)) n) x)
     | t == x && even n = Integ (Exp ((Const 1 2) * (1 + (cosen (2*k*x)))) (n`div`2)) x
     | t == x && odd  n = Integ ((Exp (1 + (-1)*(Exp (sen (k*x)) 2)) ((n-1)`div`2)) * (cosen (k*x))) x
+simbInt t = t
 
 occurs :: Term -> Term -> Bool
 occurs (Const p q) (Var x) = False
